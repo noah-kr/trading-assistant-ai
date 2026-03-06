@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Assistant - Home</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">Trading Assistant</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="chat">Chat</button>
+            <button class="nav-tab" data-tab="portfolio">Portfolio</button>
+            <button class="nav-tab" data-tab="market">Market</button>
+        </div>
+        <div class="nav-right">
+            <span class="username-display">{{ username }}</span>
+            <button id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode">&#9790;</button>
+            <button id="logout-btn" class="btn btn-small">Logout</button>
+        </div>
+    </nav>
+
+    <!-- ====== CHAT TAB ====== -->
+    <div id="tab-chat" class="tab-content active">
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        Hello! I'm your AI Trading Assistant. I can help you buy/sell stocks,
+                        ETFs and crypto, check market news, analyze prices, and manage your
+                        portfolio. What would you like to do?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <div class="chat-options">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="force-mode-toggle">
+                        <span>Force Mode</span>
+                    </label>
+                </div>
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="chat-input" placeholder="Ask me anything about trading..."
+                           autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary" id="send-btn">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Chart Modal -->
+        <div id="chart-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="modal-close" id="chart-modal-close">&times;</span>
+                <h3 id="chart-title">Stock Chart</h3>
+                <canvas id="stock-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PORTFOLIO TAB ====== -->
+    <div id="tab-portfolio" class="tab-content">
+        <div class="panel-container">
+            <div class="panel">
+                <h2>Your Portfolio</h2>
+                <div id="portfolio-summary" class="portfolio-summary">
+                    <p>Loading...</p>
+                </div>
+                <table id="portfolio-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Qty</th>
+                            <th>Market Value</th>
+                            <th>Avg Entry</th>
+                            <th>Current</th>
+                            <th>P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button id="refresh-portfolio" class="btn btn-small" style="margin-top:12px;">
+                    Refresh
+                </button>
+            </div>
+
+            <div class="panel">
+                <h2>Portfolio Allocation</h2>
+                <canvas id="portfolio-chart" width="400" height="300"></canvas>
+            </div>
+
+            <div class="panel">
+                <h2>Pending Orders</h2>
+                <table id="orders-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Qty</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="panel">
+                <h2>Deposit Funds</h2>
+                <form id="deposit-form" class="inline-form">
+                    <input type="number" id="deposit-amount" placeholder="Amount (USD)" min="1" step="0.01" required>
+                    <button type="submit" class="btn btn-primary btn-small">Deposit</button>
+                </form>
+                <div id="deposit-msg" class="info-msg" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MARKET TAB ====== -->
+    <div id="tab-market" class="tab-content">
+        <div class="panel-container">
+            <div class="panel full-width">
+                <h2>Stock Lookup</h2>
+                <form id="stock-lookup-form" class="inline-form">
+                    <input type="text" id="stock-symbol-input" placeholder="Symbol (e.g. AAPL)" required>
+                    <select id="stock-timeframe">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                    <select id="stock-period">
+                        <option value="1m">1 Month</option>
+                        <option value="3m">3 Months</option>
+                        <option value="6m">6 Months</option>
+                        <option value="1y" selected>1 Year</option>
+                        <option value="5y">5 Years</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-small">Search</button>
+                </form>
+                <canvas id="market-stock-chart" style="margin-top:16px;" width="800" height="350"></canvas>
+            </div>
+
+            <div class="panel">
+                <h2>NASDAQ 100</h2>
+                <div id="nasdaq100-list" class="scrollable-list">
+                    <p>Click to load...</p>
+                </div>
+                <button id="load-nasdaq100" class="btn btn-small" style="margin-top:8px;">Load NASDAQ 100</button>
+            </div>
+
+            <div class="panel">
+                <h2>Popular ETFs</h2>
+                <div id="etf-list" class="scrollable-list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Cryptocurrencies</h2>
+                <div id="crypto-list" class="scrollable-list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme initialiser (runs before page renders to prevent flash) -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Trading Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="auth-page">
+    <script>(function(){ var t=localStorage.getItem('theme')||'dark'; document.documentElement.setAttribute('data-theme',t); })();</script>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+            <p class="subtitle">Join the AI Trading Assistant</p>
+
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autofocus
+                           placeholder="Choose a username" minlength="3">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="Choose a password" minlength="4">
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" id="password2" name="password2" required
+                           placeholder="Confirm your password">
+                </div>
+                <div id="error-msg" class="error-msg" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+
+            <p class="auth-link">
+                Already have an account? <a href="/login">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("register-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById("error-msg");
+            errorEl.style.display = "none";
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const password2 = document.getElementById("password2").value;
+
+            if (password !== password2) {
+                errorEl.textContent = "Passwords do not match.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorEl.textContent = data.error || "Registration failed";
+                    errorEl.style.display = "block";
+                    return;
+                }
+                window.location.href = "/home";
+            } catch (err) {
+                errorEl.textContent = "Network error. Please try again.";
+                errorEl.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
